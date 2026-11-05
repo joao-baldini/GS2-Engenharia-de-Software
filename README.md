@@ -4,6 +4,8 @@
 
 Aplicação web de monitoramento de alagamentos, calor intenso e interrupções de serviços essenciais em São Paulo. Reúne observações de sensores, bases públicas e relatos comunitários, calcula a prioridade dos eventos e apresenta a origem e a confiança de cada informação.
 
+**[Acessar aplicação web](https://gs2-eng-software-2026.vercel.app)**
+
 **[Documentação técnica em PDF](Documentacao.pdf)** · **[Diagramas UML](project/documentos/diagramas)** · **[Requisitos funcionais e não funcionais](project/documentos/REQUISITOS.md)**
 
 ![Painel do UrbanRisk](project/documentos/imagens/painel-desktop.png)
@@ -86,6 +88,7 @@ Ambiente de verificação: Windows, Node.js 24.18.0, npm 11.16.0 e Chromium. Dat
 | Interface responsiva | Dez telas verificadas em 1280 px e 390 × 844 px, com rolagem interna nas tabelas. |
 | Navegação e recuperação | Menu móvel, Escape, busca sem resultado, endereço inexistente e restauração dos exemplos conferidos. |
 | Pacote de produção | Dez telas abertas com acesso direto ao detalhe e sem erros no console. |
+| Deploy web | Aplicação acessível publicamente na Vercel, sem login. Painel renderizado no navegador; página inicial, detalhe, fontes, registro e notificações responderam HTTP 200. Cabeçalhos CSP e Permissions-Policy conferidos. |
 
 [Capturas das telas](project/documentos/imagens).
 
