@@ -1,4 +1,4 @@
-"""Gera o PDF único da entrega. Não contém o roteiro interno do vídeo.
+"""Gera a documentação técnica em PDF e o documento de requisitos em Markdown.
 
 python scripts/generate_docs.py [--prototype-url https://...] [--video-url https://...]
 Dependências: scripts/requirements-docs.txt.
@@ -18,7 +18,7 @@ from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
 
 ROOT = Path(__file__).resolve().parents[1]
-OUT = ROOT / 'output' / 'pdf' / 'UrbanRisk-Documentacao-Tecnica.pdf'
+OUT = ROOT.parent / 'Documentacao.pdf'
 GREEN = colors.HexColor('#215b50')
 INK = colors.HexColor('#223b35')
 MUTED = colors.HexColor('#65746e')
@@ -46,17 +46,17 @@ RF = [
 ('RF13','Consultar fontes e rastreabilidade','Essencial','Mostrar categoria, nome declarado da fonte, confiança, data e natureza de todos os registros.','Tela distingue sensores/boletins simulados, relato não verificado e estimativa meteorológica externa.','T06'),
 ('RF14','Analisar e exportar registros','Importante','Mostrar distribuição por prioridade, origem e bairro; exportar CSV com pontuação e proveniência.','Totais batem com eventos; impacto agregado é identificado como estimativa com possível repetição; CSV trata prefixos de fórmula.','T08'),
 ('RF15','Persistir preferências e dados locais','Importante','Salvar bairro/tipos/limiar, registros e leituras; exportar JSON e restaurar cenários iniciais com confirmação.','Recarregar preserva sessão quando localStorage está disponível; falha mostra aviso; restauração substitui dados por exemplos.','T09'),
-('RF16','Informar escopo e privacidade','Essencial','Explicar armazenamento, limitações, simulação, privacidade e equipe.','Usuário encontra aviso de protótipo, ausência de serviço emergencial e orientação para não informar dados pessoais.','T10, T05'),
+('RF16','Informar escopo e privacidade','Essencial','Apresentar finalidade, tratamento dos dados e identificação da equipe.','Tela Sobre descreve a persistência local, a natureza demonstrativa dos cenários e os cuidados com informações pessoais.','T10, T05'),
 ]
 RNF = [
-('RNF01','Atualização e tempo de resposta','Eficiência de desempenho / comportamento temporal','Essencial','Meta: refletir cadastro/transição local em até 1 s após o comando em sessão de até 500 eventos. Recalcular recência a cada 30 s enquanto a página estiver ativa. Consulta externa tem timeout de 8 s.','Implementado: atualização reativa e temporizador. Timeout configurado. O limite de 1 s é meta de aceite; não houve benchmark formal. Sem sincronização meteorológica automática.'),
-('RNF02','Disponibilidade e recuperação','Confiabilidade / disponibilidade e recuperabilidade','Essencial','Meta de produção: 99,5% de disponibilidade mensal, RPO de 24 h e RTO de 4 h. No protótipo, preservar sessão em memória se armazenamento falhar; página já aberta continua consultável sem internet.','Implementado: persistência local, aviso de falha e estado sem internet. Sem service worker: não se garante recarga offline. SLA, backups e recuperação de servidor são proposta, não medidos.'),
-('RNF03','Escalabilidade','Flexibilidade / escalabilidade','Essencial','Protótipo limitado a 500 eventos por navegador com limite explícito. Meta de produção: 10.000 eventos/h e 1.000 sessões concorrentes, sem perda de eventos aceitos, com fila e persistência compartilhada.','Implementado: limite local, sem backend. Meta de produção depende de API sem estado, fila e PostgreSQL; deve ser verificada por teste de carga. Não se afirma escalabilidade do localStorage.'),
-('RNF04','Usabilidade e acessibilidade','Capacidade de interação / operabilidade e inclusividade','Essencial','Permitir fluxo de registro até detalhe em até 2 minutos, com sucesso de pelo menos 80% em teste com cinco pessoas. Funcionar em 390 px e desktop, com teclado, foco visível, labels e informação além da cor.','Implementado: interface responsiva, semântica, foco e estados de erro/vazio. Inspeção visual e fluxo manual realizados; estudo com usuários e auditoria completa de acessibilidade permanecem pendentes.'),
-('RNF05','Segurança e minimização de dados','Segurança / confidencialidade e integridade','Essencial','Não solicitar identificadores pessoais nem localização do dispositivo. Usar bairro aproximado, escapar textos, limitar entradas e restringir recursos do navegador. Produção exige HTTPS, autenticação de agentes e proteção das APIs.','Implementado: validação, escape React, aviso nos campos livres, exportação e restauração local. CSP e bloqueio de câmera/microfone/geolocalização configurados em vercel.json; headers só serão validados após deploy. Sem garantia de conformidade integral com a LGPD.'),
-('RNF06','Manutenibilidade','Manutenibilidade / modularidade e testabilidade','Importante','Separar UI, aplicação, domínio e dados; manter regras centrais cobertas por testes e exigir build/testes em cada push/PR.','Implementado: camadas src/ui, application, domain, data; TypeScript estrito e CI. O build e os 18 casos unitários passaram localmente. A execução remota do CI é verificada após o push.'),
-('RNF07','Correção e rastreabilidade','Adequação funcional / correção funcional','Essencial','O mesmo evento deve exibir idênticas origem, confiança e pontuação nas telas, respeitando recência. Transições fora do grafo não devem alterar o estado.','Implementado: motor único de domínio, tipos compartilhados, histórico e testes de limiares, estados finais e origem. A pontuação do aviso é histórica; a do detalhe é atual, diferença indicada na central.'),
-('RNF08','Avisos e limites de segurança operacional','Safety (segurança operacional) / hazard warning','Essencial','Toda sessão deve se identificar como protótipo; registros simulados devem ter indicação textual. Não apresentar pontuação como previsão ou confirmação oficial; não sugerir acionamento emergencial real.','Implementado: aviso geral, marca Simulado, explicação da confiança e limites na tela Sobre, no formulário e no detalhe. A confirmação é uma etapa do fluxo acadêmico.'),
+('RNF01','Tempo de atualização','Eficiência de desempenho / comportamento temporal','Essencial','O painel deve refletir cadastro ou transição local em até 1 s, com até 500 eventos. A recência deve ser recalculada a cada 30 s enquanto a página estiver ativa. A consulta externa deve encerrar a espera após 8 s.','Medir o intervalo entre a ação e a renderização; conferir o temporizador de 30 s e o timeout de 8 s. A importação meteorológica ocorre sob demanda.'),
+('RNF02','Disponibilidade e recuperação','Confiabilidade / disponibilidade e recuperabilidade','Essencial','A sessão aberta deve preservar os dados em memória quando o armazenamento local falhar e permitir consultar os registros carregados sem internet. O serviço em produção tem como objetivos 99,5% de disponibilidade mensal, RPO de 24 h e RTO de 4 h.','Interromper rede e escrita local e verificar a continuidade da leitura com aviso de falha. Para o serviço em produção, medir disponibilidade e tempo de restauração de backup.'),
+('RNF03','Escalabilidade','Flexibilidade / escalabilidade','Essencial','O protótipo deve limitar cada navegador a 500 eventos, com mensagem ao atingir a capacidade. A arquitetura de referência deve suportar 10.000 eventos/h e 1.000 sessões concorrentes por meio de API sem estado, fila e persistência compartilhada.','O 501º cadastro deve ser rejeitado sem apagar os registros existentes. O dimensionamento de produção é avaliado por carga, taxa de erros e ausência de perda de eventos aceitos.'),
+('RNF04','Usabilidade e acessibilidade','Capacidade de interação / operabilidade e inclusividade','Essencial','A interface deve funcionar em 390 px e desktop, com teclado, foco visível, rótulos de campos e distinção de risco por texto e ícone. O registro até o detalhe deve ser concluído em até 2 minutos, com ao menos 80% de sucesso em uma avaliação com cinco participantes.','Percorrer registro, consulta e leitura de origem; verificar foco, menu móvel e ausência de transbordamento da página. Medir tempo e conclusão das tarefas na avaliação de usabilidade.'),
+('RNF05','Segurança e proteção de dados','Segurança / confidencialidade e integridade','Essencial','A coleta deve se limitar à descrição do evento, bairro aproximado, tipo, severidade e estimativa de impacto. O sistema deve validar entradas, escapar texto na interface e restringir recursos do navegador. O serviço em produção deve proteger ações de agentes com autenticação e autorização.','Conferir campos coletados, limites de texto e número, tratamento de CSV e configuração CSP/Permissions-Policy. No ambiente hospedado, exigir HTTPS; na API de referência, negar alterações sem permissão.'),
+('RNF06','Manutenibilidade','Manutenibilidade / modularidade e testabilidade','Importante','O código deve separar apresentação, aplicação, domínio e dados. As regras de prioridade, estados e validação devem ser funções testáveis, com contratos TypeScript estritos.','Executar a suíte automatizada e o build de produção. Verificar dependências entre src/ui, src/application, src/domain e src/data, mantendo a regra de negócio fora dos componentes visuais.'),
+('RNF07','Consistência e rastreabilidade','Adequação funcional / correção funcional','Essencial','O evento deve preservar origem, confiança, horário e histórico em todas as telas. A prioridade atual deve vir de um único motor. Apenas transições previstas no grafo podem alterar o estado.','Comparar lista, detalhe e fontes; testar transição inválida e prioridade zero nos estados finais. A notificação conserva a pontuação de emissão, identificada como histórica.'),
+('RNF08','Segurança operacional','Safety / hazard warning (aviso de perigo)','Essencial','Registros simulados devem ter identificação textual. A interface deve comunicar o caráter educativo das orientações e distinguir triagem, confirmação do fluxo e confirmação oficial.','Verificar a marca Simulado nas listas e no detalhe, as informações de origem e confiança e o aviso de escopo no painel, formulário e tela Sobre.'),
 ]
 
 class Document:
@@ -77,7 +77,10 @@ class Document:
         self.y-=23
         if sub:self.p(sub,'small',gap=15)
         self.c.setStrokeColor(LINE);self.c.line(43,40,self.w-43,40)
-        self.c.setFillColor(MUTED);self.c.setFont('Body',8);self.c.drawString(43,26,'Versão 1.0 | '+self.config['date']);self.c.drawRightString(self.w-43,26,str(self.page))
+        self.c.setFillColor(MUTED);self.c.setFont('Body',8);self.c.drawString(43,26,'Versão 2.0 | '+self.config['date']);self.c.drawRightString(self.w-43,26,str(self.page))
+        self.c.bookmarkPage(f'pagina-{self.page}')
+        outline=title + (' - ' + sub.split('|')[0].strip() if title in ('Requisitos funcionais','Requisitos não funcionais') else '')
+        self.c.addOutlineEntry(outline,f'pagina-{self.page}',level=0,closed=False)
     def p(self,text,style='body',x=43,width=None,gap=11):
         width=width or self.w-86
         para=Paragraph(text,STYLES[style]);_,height=para.wrap(width,1000)
@@ -186,7 +189,7 @@ def state_diagram(d):
     label(c,43,64,'Fonte externa percorre os primeiros estados automaticamente. Relato comunitário aguarda ações manuais.',8,MUTED)
 
 def architecture(d):
-    d.start('Arquitetura em camadas','Implementação entregue: aplicação estática na Vercel; processamento e armazenamento no navegador.',True)
+    d.start('Arquitetura em camadas','Aplicação web estática, com processamento e armazenamento no navegador.',True)
     c=d.c
     box(c,43,400,211,55,'Comunidade','Formulário sem identificação')
     box(c,315,400,211,55,'Sensor / boletim','Simulador local, dados fictícios')
@@ -206,53 +209,74 @@ def architecture(d):
     arrow(c,588,202,533,202)
     label(c,540,253,'aviso',7.5,MUTED)
     label(c,548,185,'controles',7,MUTED)
-    label(c,43,52,'Não há API própria, autenticação de agente ou banco compartilhado. Nenhum segredo é necessário ao build.',8,MUTED)
+    label(c,43,52,'Persistência por navegador. A camada de aplicação organiza o processamento e a emissão de avisos internos.',8,MUTED)
+
+def write_requirements():
+    lines=['# Requisitos do UrbanRisk', '',
+        'Plataforma web de acompanhamento de alagamentos, calor intenso e interrupções de serviços essenciais em São Paulo.', '',
+        '## Requisitos funcionais', '',
+        'Prioridades: **Essencial** para o fluxo central; **Importante** para recursos de apoio.', '']
+    for code,title,priority,description,acceptance,screens in RF:
+        lines.extend([f'### {code} - {title}', '', f'**Prioridade:** {priority} · **Telas:** {screens}', '',
+            description, '', f'**Critério de aceite:** {acceptance}', ''])
+    lines.extend(['## Requisitos não funcionais', '',
+        'Classificação pela ISO/IEC 25010:2023. Os requisitos definem critérios de qualidade; os resultados das verificações estão na seção Validação do README.', '',
+        '| ID | Requisito | Classificação ISO/IEC 25010:2023 | Prioridade |',
+        '| --- | --- | --- | --- |'])
+    for code,title,category,priority,description,verification in RNF:
+        lines.append(f'| {code} | {title} | {category} | {priority} |')
+    lines.append('')
+    for code,title,category,priority,description,verification in RNF:
+        lines.extend([f'### {code} - {title}', '', f'**ISO/IEC 25010:2023:** {category}', '',
+            f'**Prioridade:** {priority}', '', f'**Requisito:** {description}', '',
+            f'**Critério de aceite e verificação:** {verification}', ''])
+    (ROOT/'documentos'/'REQUISITOS.md').write_text('\n'.join(lines),encoding='utf-8')
 
 def main():
     parser=argparse.ArgumentParser();parser.add_argument('--prototype-url');parser.add_argument('--video-url');args=parser.parse_args()
-    cfg=json.loads((ROOT/'docs/entrega.json').read_text(encoding='utf-8'))
+    cfg=json.loads((ROOT/'documentos/projeto.json').read_text(encoding='utf-8'))
     for k,v in [('prototype_url',args.prototype_url),('video_url',args.video_url)]:
         if v:
-            if not v.startswith('https://'):raise ValueError('Links de entrega devem usar HTTPS.')
+            if not v.startswith('https://'):raise ValueError('Os links devem usar HTTPS.')
             cfg[k]=v
     d=Document(cfg)
     d.start('Urban Risk Intelligence Platform','Documentação técnica da solução web | Global Solution 2026.2')
-    d.p('Informação compreensível para decisões urbanas mais conscientes.','large',gap=24)
+    d.p('Monitoramento e priorização de riscos urbanos em São Paulo.','large',gap=20)
     d.h('Identificação da equipe')
     d.table(['Nome completo','RM'],[['João Viviani Baldini','558596'],['Giuliano Ferreira Venceslau','558674'],['Enrico Nikolay Meirelles Zeronian','558557']],[407,102])
-    d.h('Links da entrega')
-    for title,key,pending in [('Repositório','repository_url',''),('Protótipo web','prototype_url','Publicação na Vercel a ser realizada pela equipe.'),('Vídeo de até 3 minutos','video_url','A gravar e publicar pela equipe; link ainda não disponível.')]:
-        d.p('<b>'+title+'</b>','body',gap=4)
-        if cfg[key]:d.p(f'<link href="{escape(cfg[key])}" color="#215b50">{escape(cfg[key])}</link>','small',gap=17)
-        else:d.p(pending,'small',gap=17)
-    d.note('Esta versão consolida os artefatos técnicos. Antes do envio no Teams, a equipe deve inserir os links reais do deploy e do vídeo na primeira página, testar o acesso público e revisar a entrega. Não há links fictícios.')
-    d.p('Conteúdo: problema e personas; 16 RF; 8 RNF; regras de negócio; diagramas UML de sequência e estados; arquitetura em camadas; rastreabilidade; validação e limites.','small')
+    d.h('Acesso ao projeto')
+    for title,key in [('Repositório','repository_url'),('Aplicação web','prototype_url'),('Vídeo de apresentação','video_url')]:
+        if cfg.get(key):
+            d.p('<b>'+title+'</b>','body',gap=4)
+            d.p(f'<link href="{escape(cfg[key])}" color="#215b50">{escape(cfg[key])}</link>','small',gap=13)
+    d.h('Conteúdo')
+    d.p('Problema, público-alvo e personas - página 2<br/>Requisitos funcionais (RF01 a RF16) - páginas 3 a 6<br/><b>Requisitos não funcionais (RNF01 a RNF08) - páginas 7 e 8</b><br/>Regras de negócio - página 9<br/>Diagramas UML de sequência e estados - páginas 10 e 11<br/>Arquitetura, disponibilidade, escala e proteção de dados - páginas 12 e 13<br/>Rastreabilidade das telas - página 14<br/>Validação e indicadores - página 15<br/>Referências técnicas - página 16','body')
 
-    d.start('Problema, pessoas e propósito','A hipótese de produto e o recorte funcional do piloto')
-    d.h('Problema e proposta')
+    d.start('Problema, público-alvo e personas','Contexto de uso e escopo da solução')
+    d.h('Problema e objetivo')
     d.p('Alagamentos, calor intenso e interrupções de serviços afetam deslocamentos e rotinas. Os sinais chegam de fontes diferentes e com confiabilidade desigual. Uma lista sem origem ou prioridade pode aumentar a incerteza. O UrbanRisk reúne esses sinais, explica uma prioridade de triagem e permite acompanhar o ciclo do evento.')
-    d.p('Público-alvo: moradores e agentes locais na área piloto de São Paulo. Operadores de serviço são stakeholders de validação e abastecimento de dados na evolução de produção. Não há integração oficial nesta entrega.')
-    d.h('Personas de projeto - hipóteses, sem entrevistas realizadas')
+    d.p('Público-alvo: moradores, agentes locais de proteção comunitária e operadores de serviços essenciais. O piloto abrange oito bairros de São Paulo: Sé, Mooca, Ipiranga, Vila Mariana, Pinheiros, Santana, Lapa e Butantã.')
+    d.h('Personas de projeto')
     d.p('<b>Marina, moradora e usuária de transporte público.</b> Consulta riscos próximos e registra uma observação sem se cadastrar. Precisa compreender rapidamente a origem, a data e o limite da informação. Sucesso: localizar um evento e sua orientação com poucos passos.')
-    d.p('<b>Rafael, agente local de proteção comunitária.</b> Analisa sinais com prioridade explicável e percorre validação, emissão e encerramento. Precisa de histórico e separação entre severidade declarada e prioridade calculada. No protótipo, suas ações são demonstrativas e abertas.')
-    d.p('<b>Cláudia, operadora de serviço essencial.</b> Precisa compreender a origem de relatos de interrupção e apoiar a atualização do evento. No piloto, consulta lista/detalhe e usa a simulação; conectores e autenticação ficam na arquitetura futura.')
-    d.h('Recorte da solução')
-    d.p('Web responsiva em português, com dez telas funcionais e uma página de erro. Dados locais por navegador; oito cenários iniciais simulados; ingestão fictícia de sensor/boletim e importação opcional de temperatura Open-Meteo. Não há API própria, previsão de desastre, push remoto ou acionamento de serviço público.')
-    d.note('Valor esperado: reduzir esforço de interpretação com origem, confiança, recência e prioridade na mesma jornada. Impacto social, precisão dos alertas e facilidade de uso são hipóteses a validar, não resultados comprovados.')
+    d.p('<b>Rafael, agente local de proteção comunitária.</b> Analisa sinais e decide quais ocorrências devem gerar atenção prioritária. Precisa da justificativa da pontuação, do histórico e de controles para validar, emitir, acompanhar e encerrar eventos.')
+    d.p('<b>Cláudia, operadora de serviço essencial.</b> Consulta interrupções por bairro e origem e acompanha sua evolução. Precisa diferenciar relatos comunitários de boletins e visualizar o estado de cada evento.')
+    d.h('Escopo da aplicação web')
+    d.p('Dez telas em português, com painel, mapa esquemático, consulta, registro, central de notificações, fontes, ingestão, análises, preferências e privacidade. O processamento ocorre no navegador e a sessão é preservada no localStorage. Oito cenários iniciais e o simulador usam dados fictícios identificados; a importação Open-Meteo consulta temperatura externa sob demanda.')
+    d.p('A versão web opera por navegador, com ações de agente demonstrativas e avisos internos. A arquitetura de referência do serviço em produção acrescenta API, armazenamento compartilhado, controle de acesso e processamento por fila.')
 
     for i in range(0,len(RF),4):
         d.start('Requisitos funcionais',f'RF{i+1:02d} a RF{i+4:02d} | Essencial = obrigatório ao fluxo central; Importante = apoio à operação.')
         for row in RF[i:i+4]:d.req(row)
 
     for i in range(0,len(RNF),4):
-        d.start('Requisitos de qualidade',f'RNF{i+1:02d} a RNF{i+4:02d} | Classificação pela ISO/IEC 25010:2023; metas separadas da evidência.')
-        for code,title,category,priority,target,evidence in RNF[i:i+4]:
+        d.start('Requisitos não funcionais',f'RNF{i+1:02d} a RNF{i+4:02d} | Classificação pela ISO/IEC 25010:2023')
+        for code,title,category,priority,target,verification in RNF[i:i+4]:
             d.p(f'<b>{code} | {title}</b>','large',gap=4)
             d.p(f'<font color="#215b50">{category} | {priority}</font>','small',gap=5)
             d.p(target,'small',gap=5)
-            d.p('<b>Estado e evidência:</b> '+evidence,'small',gap=17)
+            d.p('<b>Critério de aceite e verificação:</b> '+verification,'small',gap=17)
 
-    d.start('Regras de priorização','Motor determinístico de triagem, sem treinamento de IA ou calibração científica')
+    d.start('Regras de negócio','Classificação de prioridade, confiança, notificação e ciclo de vida')
     d.p('<b>RB01.</b> Confiança por categoria: sensor 90%, base pública 95%, comunidade 60%. O formulário não promove origem. As porcentagens são hipóteses de triagem, não probabilidade de autenticidade.')
     d.p('<b>RB02.</b> Prioridade = severidade + contribuição da confiança + impacto estimado + recência. A pontuação varia de 0 a 100. Encerrado e Descartado recebem zero, sem apagar o histórico.')
     d.table(['Fator','Regra implementada'],[
@@ -261,23 +285,23 @@ def main():
       ['Impacto (máx. 20)','min(20, round(log10(max(1, pessoas estimadas)) × 6)). Zero significa impacto desconhecido.'],
       ['Recência (máx. 10)','Idade em minutos inteiros: até 30 = 10; até 120 = 7; até 1.440 = 3; depois = 0.'],
       ['Faixas','Crítico >= 80; alto >= 60; moderado >= 40; baixo < 40.']],[138,371])
-    d.p('<b>RB03.</b> Notificar somente quando o evento entra em Alerta emitido e tem pelo menos 60 pontos. Uma notificação por evento. Relato comunitário aguarda validação manual. Fonte externa percorre validação/confirmacão automaticamente para demonstrar o pipeline; não há autenticação da fonte nem confirmação oficial.')
+    d.p('<b>RB03.</b> Notificar somente quando o evento entra em Alerta emitido e tem pelo menos 60 pontos. Uma notificação por evento. O relato comunitário aguarda validação manual; a entrada externa percorre validação e confirmação automaticamente no fluxo demonstrativo.')
     d.p('<b>RB04.</b> Acompanhamento pode ser escolhido mesmo acima de 60 pontos. Estados finais não reabrem. Notificações mantêm a pontuação da emissão; o detalhe usa prioridade atual. Recência muda a cada 30 s, sem refazer a emissão.')
     d.p('<b>RB05.</b> Open-Meteo: temperatura a 2 m da Sé, consulta sob demanda; dados de até 2 h e no máximo 5 min futuros; °C; faixa técnica de -30 a 60. Severidade: abaixo de 30 baixa; 30 a &lt;34 moderada; 34 a &lt;38 alta; >=38 crítica. Abaixo de 30 não se notifica. Pessoas estimadas = 0. Uma mesma fonte/horário não é importada novamente.')
     d.note('<b>Exemplo:</b> sensor crítico, 1.800 pessoas e leitura recente: 45 + 23 + 20 + 10 = <b>98</b>. Mesmo cenário comunitário: 45 + 15 + 20 + 10 = <b>90</b>. Pontuação alta não dispensa a etapa de validação no fluxo comunitário.')
     sequence(d);state_diagram(d);architecture(d)
 
-    d.start('Evolução para produção','Arquitetura proposta; componentes desta página não foram implantados')
-    d.h('Disponibilidade e escala')
-    d.p('Manter a apresentação estática em CDN/Vercel. Extrair serviço de eventos para API sem estado, com validação também no servidor e paginação. Persistir eventos, histórico e notificações em PostgreSQL, com índices por estado, bairro e observação. Separar coletores externos em adaptadores autenticados.')
-    d.p('Usar fila durável para desacoplar recebimento de processamento. Validar chave idempotente por fonte/identificador/horário, aplicar retry com limite e dead-letter queue. Outbox transacional evita salvar evento sem enfileirar notificação. Consumidor deduplica avisos e envia push ou e-mail conforme preferência e autorização.')
-    d.p('Meta inicial de carga: 10.000 eventos/h e 1.000 sessões simultâneas. Medir latência p95, profundidade da fila, taxa de erro e perda de eventos aceitos. Configurar alertas e health checks; backups diários com ensaio de recuperação e objetivos RPO 24 h/RTO 4 h. Nada disso é garantido pelo frontend estático.')
-    d.h('Proteção de dados e controle de acesso')
-    d.p('O protótipo reduz a coleta: sem nome, CPF, telefone, localização do aparelho ou anexos. O bairro é aproximado. Textos livres ainda podem receber dados pessoais indevidos; há aviso, mas não existe detecção automática. O localStorage não é criptografado pela aplicação e não deve armazenar dados sensíveis.')
-    d.p('Na evolução, identificar controlador/operadores, finalidade e hipótese legal aplicável com avaliação responsável. Definir retenção por finalidade, descarte, canal de direitos do titular e resposta a incidentes. Realizar avaliação de risco e de terceiros; não assumir que um checkbox acadêmico resolve a LGPD.')
-    d.p('Proteger ações de agentes com autenticação e autorização no servidor, trilha de auditoria, rate limiting e moderação. Aplicar HTTPS, segregação de segredos, logs sem dados pessoais desnecessários, backup protegido e controle de acesso por função. O vínculo com um relato nunca deve ser publicado por padrão.')
-    d.h('Integração externa e limitações')
-    d.p('A importação atual fala diretamente com o Open-Meteo, com coordenada pública fixa da Sé. O provedor recebe metadados normais da conexão. Produção pode concentrar a consulta em um coletor, reduzindo chamadas e exposição dos metadados de cada visitante. Sensores reais exigem autenticação, qualidade da leitura e proveniência verificável.')
+    d.start('Disponibilidade, escala e proteção','Arquitetura de referência do serviço em produção')
+    d.h('Processamento e escalabilidade - RNF01 e RNF03')
+    d.p('A apresentação estática permanece em CDN/Vercel. Uma API sem estado concentra validação, paginação e autorização. Adaptadores autenticados normalizam sensores e bases públicas. PostgreSQL armazena eventos, histórico e notificações, com índices por estado, bairro e data de observação.')
+    d.p('Uma fila durável desacopla o recebimento do processamento. A chave idempotente combina fonte, identificador e horário; tentativas têm limite e fila de erros. Uma outbox transacional vincula a gravação do evento ao despacho da notificação. O objetivo de dimensionamento é 10.000 eventos/h e 1.000 sessões simultâneas.')
+    d.h('Continuidade - RNF02')
+    d.p('O serviço adota monitoramento de latência p95, erros e profundidade da fila, com health checks e alertas operacionais. O objetivo de disponibilidade é 99,5% ao mês. Backups diários e restauração controlada atendem aos objetivos RPO de 24 h e RTO de 4 h.')
+    d.h('Proteção dos dados - RNF05')
+    d.p('A finalidade é descrever o evento urbano e seu impacto aproximado. O formulário coleta bairro, situação, tipo, severidade e estimativa de pessoas, com orientação para evitar dados pessoais nos campos livres. A aplicação usa escape de texto, limites de entrada, configuração CSP e bloqueio de câmera, microfone e geolocalização.')
+    d.p('No serviço em produção, agentes possuem autenticação, autorização por função e trilha de auditoria. A política de tratamento define controlador, operadores, hipótese legal aplicável, retenção por finalidade, descarte e canal de direitos do titular. Logs e exportações seguem a minimização dos dados; segredos e backups têm acesso restrito.')
+    d.h('Fontes e notificações')
+    d.p('O protótipo consulta diretamente o Open-Meteo com a coordenada fixa da Sé. Um coletor central no serviço em produção pode reduzir chamadas externas e concentrar validação de proveniência. A notificação interna pertence à aplicação; os canais remotos são consumidores separados, sujeitos à preferência e autorização de recebimento.')
 
     d.start('Rastreabilidade das telas','Dez telas funcionais, além da recuperação para rota ou evento inexistente')
     rows=[
@@ -289,35 +313,30 @@ def main():
     d.p('<b>Fonte externa:</b> T07 -> validar resposta/simulação -> classificar -> T03 -> T04 se elegível. Origem e confiança também ficam acessíveis em T06.','small')
     d.p('<b>Acompanhamento:</b> T02 -> filtrar -> T03; T08 -> analisar/exportar; T09 -> salvar preferências -> T04 com aplicação opcional.','small')
 
-    d.start('Verificação e critérios de sucesso','Resultados locais e verificações ainda necessárias')
-    d.h('Verificações executadas')
-    d.p('<b>Build de produção:</b> npm run build passou com TypeScript estrito e Vite. <b>Testes:</b> npm test passou em 18 casos: quatro fatores, confiança, seis fronteiras de recência, estados finais, transições inválidas, emissão por limiar, validação de entrada, UTC meteorológico, leitura inválida/antiga, snapshot e temperatura amena.','body')
-    d.p('<b>Navegador:</b> inspeção visual do painel e telas; cadastro e busca do relato local; transições do fluxo do agente e central; consulta externa; responsividade e navegação em viewport móvel. Evidências e limites são registrados em docs/VALIDACAO.md.','body')
-    d.h('Plano de avaliação dos indicadores do tema')
-    d.table(['Indicador','Como medir','Critério e estado'],[
-      ['Tempo de atualização','Medir entre comando aceito e atualização do painel. Separar atraso da fonte e tempo de rede.','Meta local <= 1 s. Recência 30 s. Fonte externa sob demanda; benchmark pendente.'],
-      ['Qualidade dos alertas','Comparar avisos com ocorrências rotuladas por agentes; medir precisão e falsos positivos por origem.','Meta de piloto: precisão >= 80% em base revisada. Sem evidência empírica nesta entrega.'],
-      ['Facilidade de uso','Cinco participantes executam registro, localização de alerta e consulta da origem, com observação.','Meta >= 80% de sucesso; registro em até 2 min. Estudo pendente.']],[105,202,202])
-    d.h('Limites de validação')
-    d.p('Não foram executados teste de carga de produção, medição de SLA, estudo com moradores, autenticação, auditoria integral de acessibilidade ou ensaio de backup. Dados de exemplo não permitem avaliar qualidade real de alertas. Testes de código não substituem essas avaliações.','small')
-    d.note('Publicação Vercel será feita pela equipe. Após publicar, validar acesso sem login, abertura direta de /alertas e /fontes, cabeçalhos de segurança e consulta externa. O vídeo real ainda precisa ser gravado e publicado com até 3 minutos.')
+    d.start('Validação e indicadores','Verificações do protótipo e critérios de qualidade do sistema')
+    d.h('Verificação funcional')
+    d.p('<b>Compilação:</b> TypeScript estrito e build Vite concluídos. <b>Testes automatizados:</b> 18 casos aprovados, cobrindo prioridade, confiança, seis fronteiras de recência, estados finais, transições inválidas, emissão por limiar, validação, horário UTC, leitura meteorológica e estrutura de persistência.')
+    d.table(['Fluxo','Resultado observado'],[
+      ['Registro e ciclo do evento','Cadastro comunitário, validação, confirmação, emissão, monitoramento e encerramento; histórico preservado e prioridade zero no estado final.'],
+      ['Fontes e notificações','Importação Open-Meteo, rejeição de leitura repetida, simulação de sensor e leitura de notificações conferidas.'],
+      ['Interface e dados','Dez telas em desktop de 1280 px e celular de 390 × 844 px; busca vazia, rota inexistente, menu móvel, preferências, exportações e restauração conferidos.']],[130,379])
+    d.h('Indicadores de sucesso')
+    d.table(['Indicador','Medição','Objetivo'],[
+      ['Tempo de atualização','Intervalo entre ação aceita e renderização do painel.','Até 1 s para alteração local; recência a cada 30 s.'],
+      ['Qualidade dos alertas','Comparação com ocorrências rotuladas por agentes; precisão e falsos positivos por origem.','Precisão de pelo menos 80% em avaliação de campo.'],
+      ['Facilidade de uso','Conclusão de tarefas por cinco participantes; tempo de registro e identificação da origem.','Pelo menos 80% de conclusão; registro em até 2 min.']],[105,245,159])
+    d.p('Os resultados acima comprovam os fluxos verificados do protótipo. Os objetivos de desempenho, disponibilidade, carga e avaliação de campo são critérios de qualidade da arquitetura, distintos das verificações funcionais.','small')
 
-    d.start('Referências e fechamento','Artefatos, fontes consultadas e preparação da versão final')
-    d.h('Fontes e decisões')
+    d.start('Referências técnicas','Norma de qualidade, proteção de dados, fonte meteorológica e hospedagem')
     refs=[
-      ('Enunciado da disciplina','Global Solution 2026.2 - Engenharia de Software - Urban Risk Intelligence Platform. PDF fornecido pela equipe, quatro páginas.'),
-      ('Modelo de qualidade','ISO/IEC 25010:2023, página oficial: https://www.iso.org/standard/78176.html . Classificação de qualidade usada para os RNF; não se declara certificação.'),
-      ('Privacidade','Lei 13.709/2018, texto atualizado da Câmara dos Deputados: https://www2.camara.leg.br/legin/fed/lei/2018/lei-13709-14-agosto-2018-787077-normaatualizada-pl.html . Referência para minimização e proteção, sem parecer jurídico.'),
-      ('Fonte meteorológica','Open-Meteo, documentação da API: https://open-meteo.com/en/docs . Estimativas de modelo, sem comprovação de risco na rua.'),
-      ('Hospedagem','Vercel, Vite e rotas SPA: https://vercel.com/docs/frameworks/frontend/vite . Configuração declarada em vercel.json; deploy a cargo da equipe.'),
-      ('Base de domínio','Repositório de referência da equipe: https://github.com/joao-baldini/GS2-Advanced-Programming-Mobile-Dev . Conceitos de origem e prioridade adaptados para o escopo web de Engenharia de Software.'),
+      ('ISO/IEC 25010:2023','Systems and software engineering - Systems and software Quality Requirements and Evaluation (SQuaRE) - Product quality model. https://www.iso.org/standard/78176.html'),
+      ('Lei 13.709/2018','Lei Geral de Proteção de Dados Pessoais. Texto atualizado: https://www2.camara.leg.br/legin/fed/lei/2018/lei-13709-14-agosto-2018-787077-normaatualizada-pl.html'),
+      ('Open-Meteo','Weather Forecast API. Documentação de temperatura a 2 m e condições atuais: https://open-meteo.com/en/docs'),
+      ('Vercel','Vite on Vercel. Configuração de build e rotas: https://vercel.com/docs/frameworks/frontend/vite'),
     ]
-    for title,desc in refs:d.p(f'<b>{title}.</b> {escape(desc)}','small',gap=14)
-    d.h('Artefatos versionados')
-    d.p('Este PDF único; fontes editáveis dos diagramas em docs/diagramas; código da aplicação; testes; configuração Vercel e CI; relatório de validação; gerador reproduzível deste documento e configuração de links em docs/entrega.json.','small')
-    d.h('Antes da submissão')
-    d.p('1. Revisar requisitos, regras e fluxos com todos os integrantes.<br/>2. Publicar o protótipo e testar links em janela anônima.<br/>3. Gravar e publicar o vídeo de até 3 minutos.<br/>4. Atualizar docs/entrega.json com os links reais e regenerar este PDF.<br/>5. Um integrante envia o PDF único pelo Teams, conforme calendário oficial.','small')
-    d.note('O uso de IA deve ser acompanhado de revisão e compreensão pela equipe, conforme o enunciado. O roteiro de gravação é material interno, mantido fora deste repositório.')
-    d.save();print(f'PDF criado: {OUT} ({d.page} páginas)')
+    for title,desc in refs:d.p(f'<b>{title}.</b> {escape(desc)}','body',gap=24)
+    d.save()
+    write_requirements()
+    print(f'PDF criado: {OUT} ({d.page} páginas)')
 
 if __name__=='__main__':main()
