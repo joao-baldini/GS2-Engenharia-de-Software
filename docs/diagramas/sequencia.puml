@@ -1,0 +1,34 @@
+@startuml
+title Recebimento, classificação e notificação - protótipo local
+actor "Sensor simulado / base pública / comunidade" as Origem
+boundary "Interface / adaptador" as UI
+control "Serviço de eventos" as Servico
+control "Motor de risco" as Motor
+database "Repositório local" as Repo
+boundary "Central de notificações" as Central
+actor "Pessoa / agente demo" as Pessoa
+Origem -> UI : dado recebido ou consulta solicitada
+UI -> Servico : validar e normalizar(dado)
+alt dado inválido ou fonte indisponível
+  Servico --> UI : erro específico; preservar formulário
+else dado válido
+  opt origem comunitária
+    Servico -> Repo : salvar Reportado
+    Pessoa -> UI : iniciar validação e confirmar
+    UI -> Servico : transições autorizadas pelo grafo local
+  end
+  note over Servico : fontes externas percorrem validação e confirmação automaticamente
+  Servico -> Motor : calcular(severidade, origem, impacto, recência)
+  Motor --> Servico : pontuação, faixa, confiança e fatores
+  alt decisão de emitir e pontuação >= 60
+    Servico -> Repo : salvar Alerta emitido e notificação
+    Servico -> Central : publicar aviso interno
+    Central -> Pessoa : mostrar alerta e contador não lido
+    Pessoa -> Central : abrir evento / marcar como lida
+    Central -> Repo : salvar leitura
+  else pontuação < 60 ou decisão de acompanhar
+    Servico -> Repo : salvar Em monitoramento; sem notificação
+  end
+end
+note over Repo : localStorage via efeito React; falha gera aviso; sessão permanece em memória
+@enduml

@@ -1,0 +1,10 @@
+node_modules/
+dist/
+.vercel/
+.env*
+!.env.example
+tmp/
+coverage/
+*.tsbuildinfo
+__pycache__/
+docs/screenshots/qa-*

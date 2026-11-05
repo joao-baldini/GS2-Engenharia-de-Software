@@ -1,0 +1,20 @@
+@startuml
+title Ciclo de vida do evento - transições implementadas
+hide empty description
+[*] --> Reportado : dado estruturalmente válido
+Reportado --> EmValidacao : iniciar validação
+state "Em validação" as EmValidacao
+EmValidacao --> Confirmado : confirmar [contrato aceito no demo]
+EmValidacao --> Descartado : descartar [registro rejeitado pelo agente]
+Confirmado --> Descartado : descartar [rejeição antes da emissão]
+Confirmado --> AlertaEmitido : emitir [pontuação >= 60]
+state "Alerta emitido" as AlertaEmitido
+Confirmado --> Monitoramento : acompanhar [pontuação < 60 ou decisão do agente]
+state "Em monitoramento" as Monitoramento
+AlertaEmitido --> Monitoramento : acompanhar evento
+Monitoramento --> Encerrado : encerrar [agente declara fim do acompanhamento]
+Encerrado --> [*]
+Descartado --> [*]
+note right of Confirmado : Confirmação demonstrativa;\nnão é verificação oficial.\nFontes externas avançam automaticamente.
+note right of Encerrado : Prioridade zero; histórico preservado.\nSem reabertura neste protótipo.
+@enduml

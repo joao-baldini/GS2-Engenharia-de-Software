@@ -1,0 +1,25 @@
+flowchart TB
+  subgraph externos[Fontes externas]
+    M[Comunidade: formulário]
+    S[Sensor e boletim: simulador local]
+    P[Open-Meteo: HTTPS sob demanda]
+  end
+  subgraph browser[Navegador - implementação entregue]
+    UI[Apresentação: React + rotas + componentes]
+    APP[Aplicação: store + serviço de importação]
+    DOMAIN[Negócio: validação + prioridade + estados]
+    DATA[Dados: seed + repository]
+    LS[(localStorage: eventos, notificações, preferências)]
+    NOT[Central de notificações: aviso interno e leitura]
+  end
+  M --> UI
+  S --> APP
+  P --> APP
+  UI --> APP
+  APP --> DOMAIN
+  APP --> DATA
+  DATA --> LS
+  APP --> NOT
+  V[Vercel: arquivos estáticos + HTTPS + headers] --> UI
+  SEC[Proteção: minimização, validação, escape React, CSP configurada] -.-> UI
+  SEC -.-> DOMAIN
