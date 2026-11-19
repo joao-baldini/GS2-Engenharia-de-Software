@@ -77,7 +77,7 @@ class Document:
         self.y-=23
         if sub:self.p(sub,'small',gap=15)
         self.c.setStrokeColor(LINE);self.c.line(43,40,self.w-43,40)
-        self.c.setFillColor(MUTED);self.c.setFont('Body',8);self.c.drawString(43,26,'Versão 2.0 | '+self.config['date']);self.c.drawRightString(self.w-43,26,str(self.page))
+        self.c.setFillColor(MUTED);self.c.setFont('Body',8);self.c.drawRightString(self.w-43,26,str(self.page))
         self.c.bookmarkPage(f'pagina-{self.page}')
         outline=title + (' - ' + sub.split('|')[0].strip() if title in ('Requisitos funcionais','Requisitos não funcionais') else '')
         self.c.addOutlineEntry(outline,f'pagina-{self.page}',level=0,closed=False)
@@ -245,7 +245,7 @@ def main():
     d.h('Identificação da equipe')
     d.table(['Nome completo','RM'],[['João Viviani Baldini','558596'],['Giuliano Ferreira Venceslau','558674'],['Enrico Nikolay Meirelles Zeronian','558557']],[407,102])
     d.h('Acesso ao projeto')
-    for title,key in [('Repositório','repository_url'),('Aplicação web','prototype_url'),('Vídeo de apresentação','video_url')]:
+    for title,key in [('Repositório','repository_url'),('Aplicação web','prototype_url'),('Vídeo de demonstração','video_url')]:
         if cfg.get(key):
             d.p('<b>'+title+'</b>','body',gap=4)
             d.p(f'<link href="{escape(cfg[key])}" color="#215b50">{escape(cfg[key])}</link>','small',gap=13)
@@ -315,7 +315,7 @@ def main():
 
     d.start('Validação e indicadores','Verificações do protótipo e critérios de qualidade do sistema')
     d.h('Verificação funcional')
-    d.p('<b>Compilação:</b> TypeScript estrito e build Vite concluídos. <b>Testes automatizados:</b> 18 casos aprovados, cobrindo prioridade, confiança, seis fronteiras de recência, estados finais, transições inválidas, emissão por limiar, validação, horário UTC, leitura meteorológica e estrutura de persistência.')
+    d.p('<b>Testes automatizados:</b> 18 casos aprovados, cobrindo prioridade, confiança, seis fronteiras de recência, estados finais, transições inválidas, emissão por limiar, validação, horário UTC, leitura meteorológica e estrutura de persistência.')
     d.table(['Fluxo','Resultado observado'],[
       ['Registro e ciclo do evento','Cadastro comunitário, validação, confirmação, emissão, monitoramento e encerramento; histórico preservado e prioridade zero no estado final.'],
       ['Fontes e notificações','Importação Open-Meteo, rejeição de leitura repetida, simulação de sensor e leitura de notificações conferidas.'],
