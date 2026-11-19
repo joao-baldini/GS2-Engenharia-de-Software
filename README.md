@@ -4,7 +4,7 @@
 
 Aplicação web de monitoramento de alagamentos, calor intenso e interrupções de serviços essenciais em São Paulo. Reúne observações de sensores, bases públicas e relatos comunitários, calcula a prioridade dos eventos e apresenta a origem e a confiança de cada informação.
 
-**[Acessar aplicação web](https://gs2-eng-software-2026.vercel.app)**
+**[Acessar aplicação web](https://gs2-eng-software-2026.vercel.app)** · **[Vídeo de demonstração](https://www.youtube.com/watch?v=AJwJ5qY7bWQ)**
 
 **[Documentação técnica em PDF](Documentacao.pdf)** · **[Diagramas UML](project/documentos/diagramas)** · **[Requisitos funcionais e não funcionais](project/documentos/REQUISITOS.md)**
 
